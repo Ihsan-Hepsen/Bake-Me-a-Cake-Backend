@@ -28,13 +28,3 @@
 
 ## Testing
 - To run tests, run `mvn clean test` in the root directory of the project.
-
-## Test Coverage
-### Store
-![img.png](coverage_store.png)
-___
-### Factory
-![img.png](coverage_factory.png)
-___
-### Warehouse
-![img.png](coverage_warehouse.png)
