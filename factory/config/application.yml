@@ -1,0 +1,32 @@
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /factory
+
+
+spring:
+  config:
+    additional-location: ${SPRING_CONFIG_ADDITIONAL_LOCATION}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:mysql://localhost:3308/fruit_db}
+    username: ${DATASOURCE_USER:user}
+    password: ${DATASOURCE_PASS:password}
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: myuser
+    password: mypassword
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 1s
+          max-attempts: 6
+          max-interval: 5s
+          multiplier: 2

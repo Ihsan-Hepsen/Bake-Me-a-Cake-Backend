@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  mysql_fruit_db:
+    image: mysql:8.0.30
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'fruit_db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3308:3306'
+    networks:
+      - backend
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+
+  fruit_rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    environment:
+      - RABBITMQ_DEFAULT_USER=myuser
+      - RABBITMQ_DEFAULT_PASS=mypassword
+    ports:
+      - "5672:5672" #AMQP
+      - "15672:15672" #MGMT
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:15672" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend
+    volumes:
+      - ./rabbitmq/data/:/var/lib/rabbitmq/
+      - ./rabbitmq/log/:/var/log/rabbitmq/
+
+  external_suppliers:
+    image: ksmeyers/external_suppliers:latest
+    environment:
+      - RABBIT_URL=rabbitmq
+      - RABBIT_PORT=5672
+      - RABBIT_USER=myuser
+      - RABBIT_PASSWORD=mypassword
+      - DATASOURCE_URL=jdbc:mysql://mysql_fruit_db:3306/fruit_db
+      - DATASOURCE_USER=user
+      - DATASOURCE_PASS=password
+    ports:
+      - "9090:8080"
+    depends_on:
+      - fruit_rabbitmq
+    networks:
+      - backend
+
+  idp_mysql:
+    image: mysql:latest
+    volumes:
+      - ./idp_mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: password
+    ports:
+      - '3307:3306'
+    networks:
+      - kc
+
+  idp_keycloak:
+      image: jboss/keycloak:latest
+      environment:
+        DB_VENDOR: MYSQL
+        DB_ADDR: idp_mysql
+        DB_PORT: "3306"
+        DB_DATABASE: keycloak
+        DB_USER: keycloak
+        DB_PASSWORD: password
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: Pa55w0rd
+      ports:
+        - "8180:8080"
+        - "9990:9990"
+      depends_on:
+        - idp_mysql
+      networks:
+        - kc
+
+networks:
+  kc:
+    name: kc-network
+    driver: bridge
+  backend:
+    name: back-network
+    driver: bridge
+

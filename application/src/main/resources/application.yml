@@ -1,0 +1,38 @@
+server:
+    port: 8080
+    servlet:
+        context-path: /bakery
+spring:
+#    config:
+#        additional-location: ${SPRING_CONFIG_ADDITIONAL_LOCATION}
+    datasource:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: password
+        url: jdbc:mysql://localhost:3308/fruit_db
+        username: user
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate-dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        show-sql: true
+    rabbitmq:
+        host: localhost
+        listener:
+            simple:
+                retry:
+                    enabled: true
+                    initial-interval: 1s
+                    max-attempts: 6
+                    max-interval: 5s
+                    multiplier: 2
+        password: mypassword
+        port: 5672
+        username: myuser
+
+#    security:
+#        oauth2:
+#            resourceserver:
+#                jwt:
+#                    issuer-uri: http://localhost:8180/auth/realms/BakeryRealm
+#                    jwk-set-uri: http://localhost:8180/auth/realms/BakeryRealm/protocol/openid-connect/certs

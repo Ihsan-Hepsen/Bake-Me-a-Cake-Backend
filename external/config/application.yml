@@ -1,0 +1,26 @@
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /bakery
+
+
+spring:
+  config:
+    additional-location: ${SPRING_CONFIG_ADDITIONAL_LOCATION}
+  jpa:
+    open-in-view: false
+    generate-ddl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:mysql://localhost:3308/sales_orders}
+    username: ${DATASOURCE_USER:user}
+    password: ${DATASOURCE_PASS:password}
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: myuser
+    password: mypassword
